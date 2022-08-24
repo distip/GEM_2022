@@ -56,7 +56,7 @@ colnames(spectral.blups.list) <- 'genotype'
 
 
 
-for(i in 150:length(bands)){
+for(i in 1:length(bands)){
   temp <- spectra
   temp<-temp[, which(colnames(spectra) %in% c('genotype', 'Block', 'Trt', 'Rep', 'ASD', bands[i]))]
   colnames(temp)[6] <- 'reflectance'
@@ -64,20 +64,18 @@ for(i in 150:length(bands)){
   spectrum.blup.mod<-lmer(reflectance~(1|genotype)+(1|ASD)+(1|Trt:Rep)+(1|Block:Trt:Rep) , data=temp)
 
   Vg <- data.frame(VarCorr(spectrum.blup.mod))$vcov[1]
-  Ve <- data.frame(VarCorr(spectrum.blup.mod))$vcov[4]
+  Ve <- data.frame(VarCorr(spectrum.blup.mod))$vcov[5]
   H2 <- Vg/(Vg+(Ve/3))
-  print(H2)
-}
+  
   bands.H2[which(bands.H2$band==bands[i]), 'H2'] <- H2
-  print(H2)
 
   spectra.blups.temp <- ranef(spectrum.blup.mod)$genotype + fixef(spectrum.blup.mod)
   spectra.blups.temp <- data.frame(rownames(spectra.blups.temp), spectra.blups.temp)
   colnames(spectra.blups.temp) <- c('genotype', bands[i])
   
-  spectral.blups.list <- merge(spectral.blups.list, spectra.blups.temp, by='genotpye')
+  spectral.blups.list <- merge(spectral.blups.list, spectra.blups.temp, by='genotype')
   print(i)
-
-
   
-  data.frame(VarCorr(spectrum.blup.mod))                                  
+}
+
+
